@@ -24,7 +24,7 @@ at once:
    are published, old ones expire.
 
 Separating these two effects would require a same-day full run (`./run map -irr -rv`)
-vs the RPKI-only run.
+vs the RPKI-only run. → Done, see `full-run.md`.
 
 ## Top changed ASes
 
@@ -40,13 +40,17 @@ Most frequent AS on my RPKI side of the diff:
 | AS3257 | 228 | GTT Communications |
 
 AS834 stands out — it appears most on both sides of the diff (1,399 times
-as the new AS, 764 times as the old AS). This suggests a large block of
-address space where RPKI and IRR/Routeviews disagree about ownership.
+as the new AS, 764 times as the old AS).
+
+**Update after full run:** AS834 shows almost identical numbers in the
+full run diff (1,409 entries). Since the full run uses the same sources
+as the baseline, this confirms AS834's changes are from time drift
+(real reassignments), not source disagreements.
 
 ## What this means for the dashboard project
 
-A useful dashboard metric: **breakdown of diff by source**. If Kartograf
-tagged each entry with its source (RPKI/IRR/Routeviews), diffs could show
-"these 800 changes are because RPKI disagrees with IRR" vs "these 200
-changes are genuine reassignments over time". Currently that information
-is lost in the final output.
+After completing the full run (see `full-run.md`), it turns out RPKI and
+IRR/Routeviews almost never disagree on the same prefix. So the interesting
+dashboard metric is not "source conflicts" but rather **RPKI coverage**:
+which ASes and prefixes are only covered by IRR/Routeviews and not yet
+by RPKI? Tracking this over time would show RPKI adoption progress.
